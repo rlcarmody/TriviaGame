@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     var questions = [];
     var answers = [];
     var qNum = 0;
@@ -14,29 +13,24 @@ $(document).ready(function () {
             .then(response => response.json());
         return json;
     }
-
     getData(categoriesURL).then(response => {
         let cat = response.trivia_categories;
         cat.forEach(element => {
             content.innerHTML += `<button class="categories" id="${element.id}">${element.name}</button>`;
         });
     });
-
     $('body').on('click', '.categories', function () {
         getData(`https://opentdb.com/api.php?amount=10&category=${this.id}&type=multiple`).then(response => {
             questions = response.results;
             showQ(qNum);
         })
     })
-
     const showQ = (num) => {
         timeLeft = 30;
-        $('#timer').text(timeLeft);
-        $('#timer').attr('value', Math.max(timeLeft, 10));
+        $('#timer').text(timeLeft).attr('value', Math.max(timeLeft, 10));
         intervalId = setInterval(function () {
             timeLeft--;
-            $('#timer').text(timeLeft);
-            $('#timer').attr('value', Math.max(timeLeft, 10))
+            $('#timer').text(timeLeft).attr('value', Math.max(timeLeft, 10));
             if (timeLeft < 1) {
                 showAnswer('timeout');
             }
@@ -52,10 +46,12 @@ $(document).ready(function () {
         for (let index in answers) {
             $('#answers').append(`<li class="answer">${answers[index]}</li>`)
         }
+        console.log(answers);
      
     }
     $('body').on('click', '.answer', function () {
-        if ($(this).text() === questions[qNum].correct_answer) {
+        console.log($(this).html())
+        if ($(this).text() === decodeHTML(questions[qNum].correct_answer)) {
             showAnswer(true);
         } else {
             showAnswer(false);
@@ -88,7 +84,6 @@ $(document).ready(function () {
             }
         }, 5000)
     }
-
     const randomize = (arr) => {
         let currentIndex = arr.length, temporaryValue, randomIndex;
         while (0 !== currentIndex) {
@@ -99,5 +94,10 @@ $(document).ready(function () {
             arr[randomIndex] = temporaryValue;
         }
         return arr;
+    }
+    const decodeHTML = (str) => {
+        var txt = document.createElement('div');
+        txt.innerHTML = str;
+        return txt.textContent;
     }
 })
