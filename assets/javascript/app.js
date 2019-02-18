@@ -31,6 +31,16 @@ $(document).ready(function () {
 
     const showQ = (num) => {
         timeLeft = 30;
+        $('#timer').text(timeLeft);
+        $('#timer').attr('value', Math.max(timeLeft, 10));
+        intervalId = setInterval(function () {
+            timeLeft--;
+            $('#timer').text(timeLeft);
+            $('#timer').attr('value', Math.max(timeLeft, 10))
+            if (timeLeft < 1) {
+                showAnswer('timeout');
+            }
+        }, 1000)
         answers = [];
         answers.push(questions[num].correct_answer);
         for (let index in questions[num].incorrect_answers) {
@@ -42,24 +52,31 @@ $(document).ready(function () {
         for (let index in answers) {
             $('#answers').append(`<li class="answer">${answers[index]}</li>`)
         }
-        intervalId = setInterval(function () {
-            $('#timer').text(timeLeft);
-            timeLeft--;
-            if (timeLeft < 0) {
-                clearInterval(intervalId);
-                $('#container').html(`<h2>Time\'s Up!</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`)
-            }
-        }, 1000)
+     
     }
-
     $('body').on('click', '.answer', function () {
-        clearInterval(intervalId);
         if ($(this).text() === questions[qNum].correct_answer) {
-            correctAnswers++
-            $('#container').html(`<h2>Correct!</h2>`)
+            showAnswer(true);
         } else {
-            incorrectAnswers++;
-            $('#container').html(`<h2>Incorrect</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`)
+            showAnswer(false);
+        }
+
+    })
+    const showAnswer = (status) => {
+        clearInterval(intervalId);
+        switch (status) {
+            case true:
+                correctAnswers++;
+                $('#container').html(`<h2>Correct!</h2>`);
+                break;
+            case false:
+                incorrectAnswers++;
+                $('#container').html(`<h2>Incorrect</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`);
+                break;
+            case 'timeout':
+                incorrectAnswers++;
+                $('#container').html(`<h2>Time\'s Up!</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`);
+                break;
         }
         qNum++
         setTimeout(function () {
@@ -70,8 +87,7 @@ $(document).ready(function () {
                 $('#container').html(`<h2>Game Over</h2><p>Correct Answers: ${correctAnswers}</p><p>Incorrect Answers: ${incorrectAnswers}</p>`);
             }
         }, 5000)
-    })
-
+    }
 
     const randomize = (arr) => {
         let currentIndex = arr.length, temporaryValue, randomIndex;

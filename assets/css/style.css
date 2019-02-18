@@ -18,15 +18,16 @@ h1 {
     justify-content: center;
 }
 #container {
-    display: flex;
     width: 70vw;
-    flex-direction: column;
     flex-wrap: wrap;
     max-height: 85vh;
-    justify-content: space-around;
+    justify-content: flex-start;
 }
 
 #container, #scoreboard, h1 {
+    flex-direction: column;
+    display: flex;
+
     margin: 10px;
     background: white;
     border: 5px solid #3D4C99;
@@ -50,7 +51,7 @@ button:hover, li:hover {
     cursor: pointer;
     background-color: #FF8C40;
     transform: scale(1.01);
-    text-shadow: 1px 1px rgba(0,0,0,.7);
+    text-shadow: 1px 1px 2px rgba(0,0,0,.7);
 
 }
 
@@ -64,6 +65,14 @@ h3 {
 }
 
 #scoreboard {
-    height: 30vh;
+    height: 15vh;
     width: 15vw;
+    justify-content: flex-start;
+}
+#timer {
+    font-size: 2em;
+}
+
+#timer[value="10"] {
+    color: red;
 }
