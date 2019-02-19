@@ -4,8 +4,8 @@ $(document).ready(function () {
     var intervalId;
     const categoriesURL = 'https://opentdb.com/api_category.php';
 
-     //Queries The Open Trivia DB API
-     const getData = async (url) => {
+    //Queries The Open Trivia DB API
+    const getData = async (url) => {
         const json = await fetch(url)
             .then(response => response.json());
         return json;
@@ -27,25 +27,25 @@ $(document).ready(function () {
         });
     }
     startGame();
-    
+
     //Listener for category selection calls API to fetch Q:A pairs and calls function to display first question
     $('body').on('click', '.categories', function () {
         getData(`https://opentdb.com/api.php?amount=10&category=${this.id}&type=multiple`)
             .then(response => {
                 questions = response.results;
-                showQ(qNum);
+                showQuestion(qNum);
             })
     })
     //Sets up 30 second question timer and displays the question and list of answers. 
     //The answers are constructed into an array from two properties on the response and sent to a randomizer function
-    const showQ = (num) => {
+    const showQuestion = (num) => {
         let timeLeft = 30;
         $('#timer').text(timeLeft).attr('value', Math.max(timeLeft, 10));
         intervalId = setInterval(function () {
             timeLeft--;
             $('#timer').text(timeLeft).attr('value', Math.max(timeLeft, 10));
             if (timeLeft < 1) {
-                showAnswer('timeout');
+                showAnswer();
             }
         }, 1000)
         answers = [];
@@ -68,25 +68,22 @@ $(document).ready(function () {
     //Displays the response based on whether user was correct or not.  Automatically advances to next question after 5 seconds.
     const showAnswer = (status) => {
         clearInterval(intervalId);
-        switch (status) {
-            case true:
-                correctAnswers++;
-                $('#container').html(`<h2>Correct!</h2>`);
-                break;
-            case false:
-                incorrectAnswers++;
-                $('#container').html(`<h2>Incorrect</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`);
-                break;
-            case 'timeout':
-                incorrectAnswers++;
-                $('#container').html(`<h2>Time\'s Up!</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`);
-                break;
+        if (status) {
+            correctAnswers++;
+            $('#container').html(`<h2>Correct!</h2>`);
+        } else if (!status) {
+            incorrectAnswers++;
+            $('#container').html(`<h2>Incorrect</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`);
+        } else {
+            incorrectAnswers++;
+            $('#container').html(`<h2>Time\'s Up!</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`);
         }
         qNum++
         setTimeout(function () {
-            qNum < 10 ? showQ(qNum) : $('#container').html(`<h2>Game Over</h2>
-                <p>Correct Answers: ${correctAnswers}</p><p>Incorrect Answers: ${incorrectAnswers}</p>
-                <button id="replay">Play Again</button>`);
+            qNum < 10 ? showQuestion(qNum) : $('#container').html(`<h2>Game Over</h2>
+                                            <p>Correct Answers: ${correctAnswers}</p>
+                                            <p>Incorrect Answers: ${incorrectAnswers}</p>
+                                            <button id="replay">Play Again</button>`);
         }, 5000)
     }
     $('body').on('click', '#replay', function () {
