@@ -1,25 +1,33 @@
 $(document).ready(function () {
 
-    var questions = [];
-    var answers = [];
-    var qNum = 0;
-    var correctAnswers = 0;
-    var incorrectAnswers = 0;
+    var questions, answers, qNum, correctAnswers, incorrectAnswers;
     var intervalId;
     const categoriesURL = 'https://opentdb.com/api_category.php';
-    //Queries The Open Trivia DB API
-    const getData = async (url) => {
+
+     //Queries The Open Trivia DB API
+     const getData = async (url) => {
         const json = await fetch(url)
             .then(response => response.json());
         return json;
     }
-    //Builds the list of available categories by calling the API.  Each category has an id property.
-    getData(categoriesURL).then(response => {
-        let cat = response.trivia_categories;
-        cat.forEach(element => {
-            $('#container').append(`<button class="categories" id="${element.id}">${element.name}</button>`);
+    const startGame = () => {
+        questions = [];
+        answers = [];
+        qNum = 0;
+        correctAnswers = 0;
+        incorrectAnswers = 0;
+        $('#container').empty();
+        $('#timer').text('30');
+        //Builds the list of available categories by calling the API.  Each category has an id property.
+        getData(categoriesURL).then(response => {
+            let cat = response.trivia_categories;
+            cat.forEach(element => {
+                $('#container').append(`<button class="categories" id="${element.id}">${element.name}</button>`);
+            });
         });
-    });
+    }
+    startGame();
+    
     //Listener for category selection calls API to fetch Q:A pairs and calls function to display first question
     $('body').on('click', '.categories', function () {
         getData(`https://opentdb.com/api.php?amount=10&category=${this.id}&type=multiple`)
@@ -76,10 +84,15 @@ $(document).ready(function () {
         }
         qNum++
         setTimeout(function () {
-            qNum < 10 ? showQ(qNum) : $('#container').html(`<h2>Game Over</h2><p>Correct Answers: ${correctAnswers}</p><p>Incorrect Answers: ${incorrectAnswers}</p>`);
+            qNum < 10 ? showQ(qNum) : $('#container').html(`<h2>Game Over</h2>
+                <p>Correct Answers: ${correctAnswers}</p><p>Incorrect Answers: ${incorrectAnswers}</p>
+                <button id="replay">Play Again</button>`);
         }, 5000)
     }
-    //Shuffles the "Correct Answer" with the array of incorrect answers
+    $('body').on('click', '#replay', function () {
+        startGame();
+    })
+    //Takes an array and shuffles it. The possible answers array is constructed in the same order and this ensures that answers are randomly positioned.
     const randomize = (arr) => {
         let currentIndex = arr.length, temporaryValue, randomIndex;
         while (0 !== currentIndex) {
