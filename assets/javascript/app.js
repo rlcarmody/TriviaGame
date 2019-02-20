@@ -17,7 +17,7 @@ $(document).ready(function () {
         correctAnswers = 0;
         incorrectAnswers = 0;
         $('#container').empty();
-        $('#timer').text('30');
+        $('#timer').text('30').attr('value','30');
         //Builds the list of available categories by calling the API.  Each category has an id property.
         getData(categoriesURL).then(response => {
             let cat = response.trivia_categories;
@@ -71,7 +71,7 @@ $(document).ready(function () {
         if (status) {
             correctAnswers++;
             $('#container').html(`<h2>Correct!</h2>`);
-        } else if (!status) {
+        } else if (status === false) {
             incorrectAnswers++;
             $('#container').html(`<h2>Incorrect</h2><p>The correct answer is ${questions[qNum].correct_answer}</p>`);
         } else {

@@ -56,7 +56,12 @@ button:hover, li:hover {
     transform: scale(1.01);
     color: rgba(0,0,0,.8);
     font-weight: 500;
-
+}
+:focus {
+    outline: none;
+}
+::-moz-focus-inner {
+    border:0;
 }
 
 li {
