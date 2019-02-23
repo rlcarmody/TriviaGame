@@ -8,6 +8,6 @@
 * You get a 5 second break between each question
 * Your final score is tallied at the end
 
-### Technical detials
+### Technical details
 
 * This project is powered by the [Open Trivia Database API](https://opentdb.com/) 
